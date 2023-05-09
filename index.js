@@ -38,7 +38,7 @@ app.get("/:queueName/:msg", async (req, res) => {
 });
 
 app.get(
-  "/createTeleBot/:queueName/:bot_token/:chat_id/:uid/:sign/:heso/:timeout",
+  "/createTeleBot/:queueName/:bot_token/:chat_id/:uid/:sign/:heso/:timeout/:total",
   async (req, res) => {
     const keys = Object.keys(chanels);
 

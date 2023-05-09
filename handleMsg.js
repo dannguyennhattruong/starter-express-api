@@ -1,6 +1,5 @@
 const axios = require("axios");
 const FormData = require("form-data");
-
 const GameObject = {};
 
 const setKeyValueToGameObject = (queueName, key, value) => {
@@ -19,6 +18,9 @@ const init = async (input) => {
   setKeyValueToGameObject(input.queueName, "interval", 0);
   setKeyValueToGameObject(input.queueName, "start", 1);
   setKeyValueToGameObject(input.queueName, "queueName", input.queueName);
+  setKeyValueToGameObject(input.queueName, "task", {});
+
+  setKeyValueToGameObject(input.queueName, "total", Number(input?.total) || 0);
 
   if (input?.heso) {
     setKeyValueToGameObject(input.queueName, "heso", input?.heso);
@@ -60,7 +62,8 @@ const init = async (input) => {
 };
 
 const stopBot = async (queueName) => {
-  clearInterval(GameObject[`${queueName}`]?.interval);
+  GameObject[`${input?.queueName}`].task.stop();
+  GameObject[`${input?.queueName}`].task.isTop = true;
   await sendToTelegram({
     bot_token: GameObject[`${queueName}`]?.bot_token,
     chat_id: GameObject[`${queueName}`]?.chat_id,
@@ -156,10 +159,25 @@ const main = async (input) => {
   }
 };
 
+const setCronJob = (callback, count) => {
+  console.log(`set cron with ${count}min`);
+  const cron = require("node-cron");
+  const task = cron.schedule(`*/${count} * * * *`, () => {
+    if (!GameObject[`${input?.queueName}`].task.isTop) {
+      callback();
+    }
+  });
+  return task;
+};
+
 const runCommand = async (input) => {
+  let task;
+  let match_count = 1;
+  let flag = true;
   getBalance(input).then((r) => {
     setKeyValueToGameObject(input?.queueName, "currentBalance", r);
-    GameObject[`${input?.queueName}`].interval = setInterval(() => {
+    GameObject[`${input?.queueName}`].interval = () => {
+      console.log(`${input?.uid} - phiên ${match_count}`);
       console.log(`QueueName : ${input?.queueName}`);
       getGameIssuse(input).then((i) => {
         console.log("go - " + i);
@@ -184,10 +202,15 @@ const runCommand = async (input) => {
           sendToTelegram2(GameObject[`${input?.queueName}`]);
           const OTP = predict();
 
-          main({ ...input, OTP });
+          main({ ...input, OTP }).then((_) => {
+            match_count++;
+          });
         });
       });
-    }, 1000 * input?.timeout);
+    };
+
+    task = setCronJob(GameObject[`${input?.queueName}`].interval, 2);
+    GameObject[`${input?.queueName}`].task = task;
   });
 };
 
@@ -200,14 +223,14 @@ const sendToTelegram = async (input) => {
 
 const sendToTelegram2 = async (input) => {
   var message = `
-                  🍀 Vốn : 500.000  \n
+                  🍀 Vốn : ${input?.total} ========== \n
 
-                  🔥 Số dư hiện tại ${input?.currentBalance} \n
+                  🔥 Số dư hiện tại ${input?.currentBalance} ========== \n
 
                   🚀 Biến động : ${
-                    input?.currentBalance > 500000 ? "+" : "-"
+                    input?.currentBalance > input?.total ? "+" : "-"
                   } ${Number(
-    (Math.abs(500000 - input?.currentBalance) / 500000) * 100
+    (Math.abs(input?.total - input?.currentBalance) / input?.total) * 100
   ).toFixed(2)} %
 
   `;
@@ -242,6 +265,7 @@ const setupTelebotCommand = async (input) => {
       ctx.reply(`Mày start rồi mà th khứa này 🙂 `);
     } else {
       start = 1;
+      GameObject[`${input?.queueName}`].task.stop();
       runCommand().then((_) => {
         ctx.reply(`Okay, Bạn đã start bot`);
       });
@@ -258,7 +282,6 @@ const getGameIssuse = async (input) => {
     `https://92lotteryapi.com/api/webapi/GetTRXGameIssue`,
     formData
   );
-  console.log(gameIssuse);
   setKeyValueToGameObject(
     input.queueName,
     "currentIssuseNumber",
