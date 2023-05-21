@@ -253,7 +253,7 @@ const setupTelebotCommand = async () => {
 
   const bot = new Telegraf("5684927288:AAHqkWbD7dCxG6ChFZYC4p8ZP8AL5no_H9M");
   bot.hears("hi", (ctx) => ctx.reply("Hey there"));
-  bot.command("stop", (ctx) => {
+  bot.command("stop1", (ctx) => {
     clearInterval(interval);
     console.log("Bạn đã dừng lệnh. Số tiền hiện tại là : " + currentBalance);
     ctx.reply("Bạn đã dừng lệnh. Số tiền hiện tại là : " + currentBalance);
