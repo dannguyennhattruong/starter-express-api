@@ -285,8 +285,6 @@ const getGameIssuse = async () => {
       formData
     );
 
-    console.log(gameIssuse);
-
     return gameIssuse.data?.data?.IssueNumber;
   } catch (error) {
     return await getGameIssuse();
