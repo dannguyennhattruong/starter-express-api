@@ -16,7 +16,7 @@ function generateOTP() {
   }
   console.log(`OTP : ${OTP}`);
   currentOTP = OTP;
-  return OTP.at(-1);
+  return OTP[OTP.length - 1];
 }
 
 const predict = () => {
