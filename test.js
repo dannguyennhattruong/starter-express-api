@@ -60,7 +60,8 @@ const getBalance = async () => {
 
 let issuenumberEntry = 20230521130539;
 const main = async (issueNum, num) => {
-  console.log(` Phiên ${issuenumberEntry} ===========X============`);
+  const iss = await getGameIssuse();
+  console.log(` Phiên ${iss} ===========X============`);
   try {
     var formData = new FormData();
     formData.append("uid", 1005280);
@@ -72,7 +73,7 @@ const main = async (issueNum, num) => {
     formData.append("betcount", `${heso}`);
     formData.append("gametype", "2");
     formData.append("selecttype", num || "small");
-    formData.append("issuenumber", issueNum);
+    formData.append("issuenumber", iss);
     formData.append("language", "vi");
     formData.append("typeid", 13);
     console.log(` Số tiền đặt cược là ${1000 * heso} `);
@@ -275,6 +276,24 @@ const setupTelebotCommand = async () => {
 };
 
 setupTelebotCommand();
+
+const getGameIssuse = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("language", "vi");
+    formData.append("typeid", "13");
+    const gameIssuse = await axios.post(
+      `https://92lotteryapi.com/api/webapi/GetTRXGameIssue`,
+      formData
+    );
+
+    console.log(gameIssuse);
+
+    return gameIssuse.data?.data?.IssueNumber;
+  } catch (error) {
+    return await getGameIssuse();
+  }
+};
 
 //khanh
 //https://cerise-tadpole-tutu.cyclic.app/createTeleBot/test/5684927288:AAHqkWbD7dCxG6ChFZYC4p8ZP8AL5no_H9M/-861626613/1005280/42BBBB760E868AFACF71C158B55438B8529C196E23BAA768CF0A4AB5A16BB812/3/120
