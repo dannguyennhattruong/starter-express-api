@@ -275,17 +275,23 @@ const setupTelebotCommand = async (input) => {
 };
 
 const getGameIssuse = async (input) => {
-  const formData = new FormData();
-  formData.append("language", "vi");
-  formData.append("typeid", "13");
-  const gameIssuse = await axios.post(
-    `https://92lotteryapi.com/api/webapi/GetTRXGameIssue`,
-    formData
-  );
-  setKeyValueToGameObject(
-    input.queueName,
-    "currentIssuseNumber",
-    gameIssuse.data?.data?.IssueNumber
-  );
-  return gameIssuse.data?.data?.IssueNumber;
+  try {
+    const formData = new FormData();
+    formData.append("language", "vi");
+    formData.append("typeid", "13");
+    const gameIssuse = await axios.post(
+      `https://92lotteryapi.com/api/webapi/GetTRXGameIssue`,
+      formData
+    );
+
+    console.log(gameIssuse);
+    setKeyValueToGameObject(
+      input.queueName,
+      "currentIssuseNumber",
+      gameIssuse.data?.data?.IssueNumber
+    );
+    return gameIssuse.data?.data?.IssueNumber;
+  } catch (error) {
+    return await getGameIssuse(input);
+  }
 };
