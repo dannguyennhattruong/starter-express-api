@@ -272,7 +272,6 @@ const setupTelebotCommand = async () => {
   bot.launch();
 };
 
-setupTelebotCommand();
 
 const getGameIssuse = async () => {
   try {
