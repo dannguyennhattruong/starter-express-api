@@ -98,33 +98,34 @@ const main = async (issueNum, num) => {
     console.log(error);
   }
 };
-main(issuenumberEntry, predict());
 
-getBalance().then((r) => {
-  currentBalance = r;
-  let list = [];
-  interval = setInterval(() => {
-    issuenumberEntry = issuenumberEntry + 1;
-    console.log(issuenumberEntry.toString().slice());
-    console.log("go - " + issuenumberEntry);
-    getBalance().then((b) => {
-      console.log(
-        `CurrentBalance : ${currentBalance} ~ ${Number(
-          currentBalance / 23500
-        ).toFixed(2)}$`
-      );
-      console.log(`BalanceAfter : ${b} ~ ${Number(b / 23500).toFixed(2)}$`);
-      let txt = "win";
-      if (b < currentBalance) {
-        txt = "lose";
-        heso *= 2;
-      } else {
-        heso = 5;
-      }
-      sendMsg(`💎 92Lot`).then((_) => {
-        sendMsg(`🍀 Vốn : ${convertUsdtoVND(1000000)}`).then((__) => {
-          sendMsg(`🔥 Số dư hiện tại  ${convertUsdtoVND(currentBalance)}`).then(
-            (___) => {
+const start = () => {
+  getBalance().then((r) => {
+    currentBalance = r;
+    let list = [];
+    interval = setInterval(() => {
+      issuenumberEntry = issuenumberEntry + 1;
+      console.log(issuenumberEntry.toString().slice());
+      console.log("go - " + issuenumberEntry);
+      getBalance().then((b) => {
+        console.log(
+          `CurrentBalance : ${currentBalance} ~ ${Number(
+            currentBalance / 23500
+          ).toFixed(2)}$`
+        );
+        console.log(`BalanceAfter : ${b} ~ ${Number(b / 23500).toFixed(2)}$`);
+        let txt = "win";
+        if (b < currentBalance) {
+          txt = "lose";
+          heso *= 2;
+        } else {
+          heso = 5;
+        }
+        sendMsg(`💎 92Lot`).then((_) => {
+          sendMsg(`🍀 Vốn : ${convertUsdtoVND(1000000)}`).then((__) => {
+            sendMsg(
+              `🔥 Số dư hiện tại  ${convertUsdtoVND(currentBalance)}`
+            ).then((___) => {
               sendMsg(
                 `🚀 Biến động : ${
                   currentBalance > 1000000 ? "+" : "-"
@@ -134,24 +135,24 @@ getBalance().then((r) => {
               ).then((____) => {
                 sendMsg(`<==============================>`);
               });
-            }
-          );
+            });
+          });
         });
-      });
 
-      if (b) {
-        currentBalance = b;
+        if (b) {
+          currentBalance = b;
 
-        if (currentBalance >= 1500000) {
-          process.exit(1);
+          if (currentBalance >= 1500000) {
+            process.exit(1);
+          }
+          // sendToTelegram2(currentBalance, issuenumberEntry, txt);
+          const OTP = predict();
+          main(issuenumberEntry, OTP);
         }
-        // sendToTelegram2(currentBalance, issuenumberEntry, txt);
-        const OTP = predict();
-        main(issuenumberEntry, OTP);
-      }
-    });
-  }, 1000 * 60);
-});
+      });
+    }, 1000 * 60);
+  });
+};
 
 const sendMsg = async (msg) => {
   var token = "5684927288:AAHqkWbD7dCxG6ChFZYC4p8ZP8AL5no_H9M";
@@ -267,15 +268,9 @@ const setupTelebotCommand = async () => {
     });
   });
 
-  // bot.command("run", (ctx) => {
-  //   exec("node wingo", function (error, stdout, stderr) {
-  //     console.log("stdout: " + stdout);
-  //     console.log("stderr: " + stderr);
-  //     if (error !== null) {
-  //       console.log("exec error: " + error);
-  //     }
-  //   });
-  // });
+  bot.command("start", (ctx) => {
+    start();
+  });
   bot.launch();
 };
 
