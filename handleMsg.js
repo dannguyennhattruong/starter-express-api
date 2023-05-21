@@ -1,6 +1,7 @@
 const axios = require("axios");
 const FormData = require("form-data");
 const GameObject = {};
+let start = 0;
 
 const setKeyValueToGameObject = (queueName, key, value) => {
   GameObject[`${queueName}`][`${key}`] = value;
@@ -240,7 +241,6 @@ const sendToTelegram2 = async (input) => {
 
   const res = await axios.get(url);
 };
-
 const setupTelebotCommand = async (input) => {
   const { Telegraf } = require("telegraf");
 
