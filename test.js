@@ -59,8 +59,9 @@ const getBalance = async () => {
 };
 
 let issuenumberEntry = 20230521130539;
-const main = async (issueNum, num) => {
+const main = async (num) => {
   const iss = await getGameIssuse();
+  console.log(iss)
   console.log(` Phiên ${iss} ===========X============`);
   try {
     var formData = new FormData();
@@ -90,7 +91,7 @@ const main = async (issueNum, num) => {
     );
     console.log(result.data?.msg);
     console.log(
-      `${Date.now()} - Typeid ${1} - ${issueNum} - Đăt số ${num || "small"}`
+      `${Date.now()} - Typeid ${1} - ${iss} - Đăt số ${num || "small"}`
     );
     console.log(
       `=====================================================================`
@@ -105,9 +106,6 @@ const start = () => {
     currentBalance = r;
     let list = [];
     interval = setInterval(() => {
-      issuenumberEntry = issuenumberEntry + 1;
-      console.log(issuenumberEntry.toString().slice());
-      console.log("go - " + issuenumberEntry);
       getBalance().then((b) => {
         console.log(
           `CurrentBalance : ${currentBalance} ~ ${Number(
@@ -148,7 +146,7 @@ const start = () => {
           }
           // sendToTelegram2(currentBalance, issuenumberEntry, txt);
           const OTP = predict();
-          main(issuenumberEntry, OTP);
+          main(OTP);
         }
       });
     }, 1000 * 60);
