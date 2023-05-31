@@ -1,6 +1,7 @@
 const axios = require("axios");
 const FormData = require("form-data");
-let heso = 5;
+let heso = 4;
+let dHeso = 4;
 let currentBalance = 0;
 let currentOTP = 0;
 let betAmount = 0;
@@ -16,7 +17,7 @@ function generateOTP() {
   }
   console.log(`OTP : ${OTP}`);
   currentOTP = OTP;
-  return OTP[OTP.length - 1];
+  return OTP.at(-1);
 }
 
 const predict = () => {
@@ -26,6 +27,22 @@ const predict = () => {
     return "big";
   }
   return "small";
+};
+
+const getGameIssuse = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("language", "vi");
+    formData.append("typeid", "1");
+    const gameIssuse = await axios.post(
+      `https://92lotteryapi.com/api/webapi/GetGameIssue`,
+      formData
+    );
+
+    return gameIssuse.data?.data?.IssueNumber;
+  } catch (error) {
+    return await getGameIssuse();
+  }
 };
 
 const getBalance = async () => {
@@ -58,13 +75,12 @@ const getBalance = async () => {
   }
 };
 
-let issuenumberEntry = 20230521130539;
-const main = async (num) => {
+let issuenumberEntry = 20230531130749;
+const main = async (issueNum, num) => {
   const iss = await getGameIssuse();
-  console.log(iss)
   console.log(` Phiên ${iss} ===========X============`);
   try {
-    var formData = new FormData();
+    const formData = new FormData();
     formData.append("uid", 1005280);
     formData.append(
       "sign",
@@ -76,12 +92,12 @@ const main = async (num) => {
     formData.append("selecttype", num || "small");
     formData.append("issuenumber", iss);
     formData.append("language", "vi");
-    formData.append("typeid", 13);
+    formData.append("typeid", 1);
     console.log(` Số tiền đặt cược là ${1000 * heso} `);
     betAmount = 1000 * heso;
 
     const result = await axios.post(
-      "https://92lotteryapi.com/api/webapi/GameTRXBetting",
+      "https://92lotteryapi.com/api/webapi/GameBetting",
       formData,
       {
         headers: {
@@ -98,14 +114,18 @@ const main = async (num) => {
     );
   } catch (error) {
     console.log(error);
+    return await main(issueNum, num);
   }
 };
+const app = async () => {
+  main(issuenumberEntry, predict());
 
-const start = () => {
   getBalance().then((r) => {
     currentBalance = r;
-    let list = [];
     interval = setInterval(() => {
+      issuenumberEntry = issuenumberEntry + 1;
+      console.log(issuenumberEntry.toString().slice());
+      console.log("go - " + issuenumberEntry);
       getBalance().then((b) => {
         console.log(
           `CurrentBalance : ${currentBalance} ~ ${Number(
@@ -118,18 +138,18 @@ const start = () => {
           txt = "lose";
           heso *= 2;
         } else {
-          heso = 5;
+          heso = dHeso;
         }
         sendMsg(`💎 92Lot`).then((_) => {
-          sendMsg(`🍀 Vốn : ${convertUsdtoVND(1000000)}`).then((__) => {
+          sendMsg(`🍀 Vốn : ${convertUsdtoVND(2000000)}`).then((__) => {
             sendMsg(
               `🔥 Số dư hiện tại  ${convertUsdtoVND(currentBalance)}`
             ).then((___) => {
               sendMsg(
                 `🚀 Biến động : ${
-                  currentBalance > 1000000 ? "+" : "-"
+                  currentBalance > 2000000 ? "+" : "-"
                 } ${Number(
-                  (Math.abs(1000000 - currentBalance) / 1000000) * 100
+                  (Math.abs(2000000 - currentBalance) / 2000000) * 100
                 ).toFixed(2)} %`
               ).then((____) => {
                 sendMsg(`<==============================>`);
@@ -137,16 +157,16 @@ const start = () => {
             });
           });
         });
-
+        console.log(`* ${b}`);
         if (b) {
           currentBalance = b;
 
-          if (currentBalance >= 1500000) {
-            process.exit(1);
-          }
+          // if (currentBalance >= 1500000) {
+          //   process.exit(1);
+          // }
           // sendToTelegram2(currentBalance, issuenumberEntry, txt);
           const OTP = predict();
-          main(OTP);
+          main(issuenumberEntry, OTP);
         }
       });
     }, 1000 * 60);
@@ -253,7 +273,7 @@ const setupTelebotCommand = async () => {
 
   const bot = new Telegraf("5684927288:AAHqkWbD7dCxG6ChFZYC4p8ZP8AL5no_H9M");
   bot.hears("hi", (ctx) => ctx.reply("Hey there"));
-  bot.command("stop1", (ctx) => {
+  bot.command("stop", (ctx) => {
     clearInterval(interval);
     console.log("Bạn đã dừng lệnh. Số tiền hiện tại là : " + currentBalance);
     ctx.reply("Bạn đã dừng lệnh. Số tiền hiện tại là : " + currentBalance);
@@ -263,31 +283,31 @@ const setupTelebotCommand = async () => {
     var url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${msg}`; //&parse_mode=html
 
     axios.get(url).then((r) => {
+      process.exit(0);
     });
   });
 
-  bot.command("start", (ctx) => {
-    start();
+  bot.command("run -", (ctx) => {
+    clearInterval(interval);
+    heso = dHeso - 1;
+    ctx.reply(`Ban da giam he so xuong ${heso}`);
+    app();
+  });
+  bot.command("run -", (ctx) => {
+    clearInterval(interval);
+    heso = dHeso + 1;
+    ctx.reply(`Ban da tang he so len ${heso}`);
+
+    app();
+  });
+
+  bot.command("start1", (ctx) => {
+    app();
   });
   bot.launch();
 };
 
-
-const getGameIssuse = async () => {
-  try {
-    const formData = new FormData();
-    formData.append("language", "vi");
-    formData.append("typeid", "13");
-    const gameIssuse = await axios.post(
-      `https://92lotteryapi.com/api/webapi/GetTRXGameIssue`,
-      formData
-    );
-
-    return gameIssuse.data?.data?.IssueNumber;
-  } catch (error) {
-    return await getGameIssuse();
-  }
-};
+setupTelebotCommand();
 
 //khanh
 //https://cerise-tadpole-tutu.cyclic.app/createTeleBot/test/5684927288:AAHqkWbD7dCxG6ChFZYC4p8ZP8AL5no_H9M/-861626613/1005280/42BBBB760E868AFACF71C158B55438B8529C196E23BAA768CF0A4AB5A16BB812/3/120
