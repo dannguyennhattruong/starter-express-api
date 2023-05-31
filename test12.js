@@ -289,15 +289,18 @@ const setupTelebotCommand = async () => {
   });
 
   bot.command("run2k", (ctx) => {
-    heso = 2;
+    dHeso = 2;
+    heso = dHeso;
     ctx.reply(`Ban da giam he so xuong ${heso}`);
   });
   bot.command("run3k", (ctx) => {
-    heso = 3;
+    dHeso = 3;
+    heso = dHeso;
     ctx.reply(`Ban da tang he so len ${heso}`);
   });
   bot.command("run4k", (ctx) => {
-    heso = 3;
+    dHeso = 4;
+    heso = dHeso;
     ctx.reply(`Ban da tang he so len ${heso}`);
   });
 
