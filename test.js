@@ -17,7 +17,7 @@ function generateOTP() {
   }
   console.log(`OTP : ${OTP}`);
   currentOTP = OTP;
-  return OTP.at(-1);
+  return OTP[OTP.length - 1];
 }
 
 const predict = () => {
@@ -303,6 +303,10 @@ const setupTelebotCommand = async () => {
 
   bot.command("start1", (ctx) => {
     app();
+  });
+
+  bot.command("stop2", (ctx) => {
+    clearInterval(interval);
   });
   bot.launch();
 };
