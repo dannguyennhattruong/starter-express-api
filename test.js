@@ -307,6 +307,7 @@ const setupTelebotCommand = async () => {
 
   bot.command("stop2", (ctx) => {
     clearInterval(interval);
+    
     ctx.reply(`Dừng lệnh`);
   });
   bot.launch();
