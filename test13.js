@@ -274,7 +274,7 @@ const setupTelebotCommand = async () => {
 
   const bot = new Telegraf("5684927288:AAHqkWbD7dCxG6ChFZYC4p8ZP8AL5no_H9M");
   bot.hears("hi", (ctx) => ctx.reply("Hey there"));
-  bot.command("stop", (ctx) => {
+  bot.command("stop123", (ctx) => {
     clearInterval(interval);
     console.log("Bạn đã dừng lệnh. Số tiền hiện tại là : " + currentBalance);
     ctx.reply("Bạn đã dừng lệnh. Số tiền hiện tại là : " + currentBalance);
@@ -288,27 +288,27 @@ const setupTelebotCommand = async () => {
     });
   });
 
-  bot.command("run2k", (ctx) => {
+  bot.command("run2k123", (ctx) => {
     dHeso = 2;
     heso = dHeso;
     ctx.reply(`Ban da giam he so xuong ${heso}`);
   });
-  bot.command("run3k", (ctx) => {
+  bot.command("run3k123", (ctx) => {
     dHeso = 3;
     heso = dHeso;
     ctx.reply(`Ban da tang he so len ${heso}`);
   });
-  bot.command("run4k", (ctx) => {
+  bot.command("run4k123", (ctx) => {
     dHeso = 4;
     heso = dHeso;
     ctx.reply(`Ban da tang he so len ${heso}`);
   });
 
-  bot.command("start2", (ctx) => {
+  bot.command("start123", (ctx) => {
     app();
   });
 
-  bot.command("stop2", (ctx) => {
+  bot.command("stop1123", (ctx) => {
     clearInterval(interval);
     
     ctx.reply(`Dừng lệnh`);
