@@ -288,12 +288,16 @@ const setupTelebotCommand = async () => {
     });
   });
 
-  bot.command("run -", (ctx) => {
-    heso = dHeso - 1;
+  bot.command("run2k", (ctx) => {
+    heso = 2;
     ctx.reply(`Ban da giam he so xuong ${heso}`);
   });
-  bot.command("run -", (ctx) => {
-    heso = dHeso + 1;
+  bot.command("run3k", (ctx) => {
+    heso = 3;
+    ctx.reply(`Ban da tang he so len ${heso}`);
+  });
+  bot.command("run4k", (ctx) => {
+    heso = 3;
     ctx.reply(`Ban da tang he so len ${heso}`);
   });
 
@@ -305,6 +309,7 @@ const setupTelebotCommand = async () => {
     clearInterval(interval);
     
     ctx.reply(`Dừng lệnh`);
+    process.exit(0);
   });
   bot.launch();
 };
